@@ -1,0 +1,65 @@
+# docker compose up --build
+#
+#   payment-service  http://localhost:8000   (instrumented sample app)
+#   fraud-service    http://localhost:8001   (downstream service, same trace)
+#   collector        http://localhost:9000   (API + viewer at /ui/issues)
+#   postgres         event storage
+#
+# The services deliberately do NOT depend on the collector: an application must
+# start and serve traffic even when its monitoring backend is down.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: pulsetrace
+      POSTGRES_PASSWORD: pulsetrace
+      POSTGRES_DB: pulsetrace
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pulsetrace"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  collector:
+    build:
+      context: .
+      dockerfile: collector/Dockerfile
+    environment:
+      DATABASE_URL: postgresql+asyncpg://pulsetrace:pulsetrace@postgres:5432/pulsetrace
+    ports:
+      - "9000:9000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  fraud-service:
+    build:
+      context: .
+      dockerfile: examples/Dockerfile
+    command: ["uvicorn", "examples.fraud_service.main:app", "--host", "0.0.0.0", "--port", "8001"]
+    environment:
+      PULSETRACE_ENDPOINT: http://collector:9000/v1/events
+      PULSETRACE_ENVIRONMENT: docker
+    ports:
+      - "8001:8001"
+
+  payment-service:
+    build:
+      context: .
+      dockerfile: examples/Dockerfile
+    command: ["uvicorn", "examples.payment_service.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    environment:
+      PULSETRACE_ENDPOINT: http://collector:9000/v1/events
+      PULSETRACE_ENVIRONMENT: docker
+      FRAUD_SERVICE_URL: http://fraud-service:8001
+      PAYMENTS_DATABASE_URL: sqlite+aiosqlite:////home/app/work/payments.db
+    ports:
+      - "8000:8000"
+    depends_on:
+      - fraud-service
+
+volumes:
+  pgdata:

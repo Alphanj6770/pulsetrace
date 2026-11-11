@@ -1,0 +1,65 @@
+{% if exceptions %}
+<h2>Exception</h2>
+{% for exc in exceptions %}
+  {% if exc.relation == "cause" %}<div class="relation">↳ caused by</div>
+  {% elif exc.relation == "context" %}<div class="relation">↳ raised while handling</div>
+  {% elif exc.relation == "group" %}<div class="relation">↳ member {{ exc.group_index }} of the exception group</div>{% endif %}
+  <div class="exc" style="margin-left: {{ exc.depth * 16 }}px">
+    <div><strong class="level-error">{{ exc.type }}</strong>{% if exc.message %}: {{ exc.message }}{% endif %}</div>
+    {% for note in exc.notes or [] %}<div class="muted">note: {{ note }}</div>{% endfor %}
+    {% set st = exc.stacktrace or {} %}
+    {% if st.frames_omitted %}<div class="muted">… {{ st.frames_omitted }} frames omitted …</div>{% endif %}
+    {% for frame in (st.frames or [])|reverse %}
+      {# Application frames are expanded; library frames are collapsed to one line. #}
+      <details class="frame{% if frame.in_app %} in-app{% endif %}"{% if frame.in_app %} open{% endif %}>
+        <summary class="loc"><code>{{ frame.filename }}</code> in <code>{{ frame.function }}</code> at line {{ frame.lineno }}
+          {% if not frame.in_app %}<span class="pill muted">library</span>{% endif %}</summary>
+        {% if frame.context_line is defined %}
+<pre>{% for line in frame.pre_context or [] %}{{ line }}
+{% endfor %}<span class="hl">{{ frame.context_line }}</span>{% for line in frame.post_context or [] %}
+{{ line }}{% endfor %}</pre>
+        {% endif %}
+      </details>
+    {% endfor %}
+  </div>
+{% endfor %}
+{% elif payload.message %}
+<h2>Message</h2>
+<pre>{{ payload.message }}</pre>
+{% endif %}
+
+{% if payload.request %}
+<h2>Request</h2>
+<dl class="kv">
+  {% for key, value in payload.request.items() if key != "headers" %}<dt>{{ key }}</dt><dd>{{ value }}</dd>{% endfor %}
+  {% for key, value in (payload.request.headers or {}).items() %}<dt>header: {{ key }}</dt><dd>{{ value }}</dd>{% endfor %}
+</dl>
+{% endif %}
+
+{% if payload.breadcrumbs %}
+<h2>Breadcrumbs</h2>
+<table>
+  <tr><th>Time</th><th>Category</th><th>Level</th><th>Message / data</th></tr>
+  {% for crumb in payload.breadcrumbs %}
+  <tr>
+    <td class="muted">{{ crumb.timestamp[11:23] }}</td>
+    <td>{{ crumb.category }}</td>
+    <td class="level-{{ crumb.level }}">{{ crumb.level }}</td>
+    <td>{% if crumb.message %}{{ crumb.message }}{% endif %}
+        {% if crumb.data %}<div class="muted"><code>{{ crumb.data | tojson }}</code></div>{% endif %}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endif %}
+
+<h2>Context</h2>
+<dl class="kv">
+  <dt>service</dt><dd>{{ payload.service }}</dd>
+  <dt>environment</dt><dd>{{ payload.environment }}</dd>
+  <dt>release</dt><dd>{{ payload.release }}</dd>
+  {% if payload.trace %}<dt>trace</dt><dd><a href="/ui/traces/{{ payload.trace.trace_id }}">{{ payload.trace.trace_id }}</a></dd>{% endif %}
+  {% if payload.user %}<dt>user</dt><dd><code>{{ payload.user | tojson }}</code></dd>{% endif %}
+  {% for key, value in (payload.tags or {}).items() %}<dt>tag: {{ key }}</dt><dd>{{ value }}</dd>{% endfor %}
+  {% if payload.extra %}<dt>extra</dt><dd><code>{{ payload.extra | tojson }}</code></dd>{% endif %}
+  <dt>sdk</dt><dd>{{ payload.sdk.name }} {{ payload.sdk.version }}</dd>
+</dl>

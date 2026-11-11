@@ -1,0 +1,41 @@
+{
+  "environment": {
+    "date": "2026-11-11T10:00:24+00:00",
+    "python": "3.14.7",
+    "implementation": "CPython",
+    "platform": "macOS-27.2.1-arm64-arm-64bit-Mach-O",
+    "cpu": "Apple M4",
+    "packages": {
+      "fastapi": "0.162.4",
+      "starlette": "1.10.0",
+      "httpx": "0.28.1",
+      "uvicorn": "0.54.0"
+    }
+  },
+  "collector_down": {
+    "events_captured": 30000,
+    "capture_p50_us": 140.625,
+    "capture_p99_us": 155.417,
+    "memory_mb_after": {
+      "2000": 2.948356,
+      "10000": 3.156449,
+      "30000": 3.158055
+    },
+    "peak_memory_mb": 3.17,
+    "queue_capacity": 2048,
+    "queue_high_watermark": 2048,
+    "dropped_queue_full": 27852,
+    "avg_event_bytes": 1359,
+    "unbounded_queue_estimate_mb": 40.8,
+    "unsent_at_shutdown": 2148
+  },
+  "slow_collector": {
+    "offered_events": 27800,
+    "offered_per_second": 10000,
+    "delivered": 5500,
+    "dropped_queue_full": 20152,
+    "delivered_per_second": 1833,
+    "queue_high_watermark": 2048,
+    "loop_lag_ms_p50": 0.85
+  }
+}

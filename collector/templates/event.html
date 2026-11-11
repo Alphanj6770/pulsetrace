@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}{{ event.title }}{% endblock %}
+{% block content %}
+<h1>{{ event.title }}</h1>
+<div class="muted">{{ event.type }} · {{ event.service }} · {{ event.timestamp[:23] | replace("T", " ") }} UTC
+  {% if event.fingerprint %} · <a href="/ui/issues/{{ event.fingerprint }}">issue</a>{% endif %}</div>
+
+{% if payload.transaction %}
+<h2>Transaction</h2>
+<dl class="kv">
+  <dt>name</dt><dd>{{ payload.transaction.name }}</dd>
+  <dt>duration</dt><dd>{{ payload.transaction.duration_ms }} ms</dd>
+  <dt>status</dt><dd>{{ payload.transaction.status }}</dd>
+  <dt>spans</dt><dd>{{ payload.transaction.spans | length }}{% if payload.transaction.dropped_spans %} ({{ payload.transaction.dropped_spans }} dropped){% endif %}</dd>
+</dl>
+{% endif %}
+
+{% include "_event_detail.html" %}
+
+<h2>Raw payload</h2>
+<pre>{{ payload | tojson(indent=2) }}</pre>
+{% endblock %}

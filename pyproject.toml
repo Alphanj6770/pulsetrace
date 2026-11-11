@@ -1,0 +1,110 @@
+[build-system]
+requires = ["hatchling>=1.26"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pulsetrace"
+dynamic = ["version"]
+description = "Async-first Python observability SDK: exception capture, request instrumentation, distributed tracing and bounded telemetry delivery."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "PulseTrace contributors" }]
+keywords = ["observability", "tracing", "error-monitoring", "asyncio", "fastapi", "telemetry", "sdk"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Framework :: AsyncIO",
+    "Framework :: FastAPI",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: System :: Monitoring",
+    "Typing :: Typed",
+]
+# The SDK runs inside other people's applications, so it deliberately has a
+# single runtime dependency. Integrations import their framework lazily.
+dependencies = ["httpx>=0.27"]
+
+[project.optional-dependencies]
+sqlalchemy = ["sqlalchemy>=2.0"]
+
+[dependency-groups]
+collector = [
+    "fastapi>=0.115",
+    "uvicorn>=0.30",
+    "pydantic>=2.7",
+    "sqlalchemy[asyncio]>=2.0.30",
+    "aiosqlite>=0.20",
+    "asyncpg>=0.29",
+    "jinja2>=3.1",
+]
+dev = [
+    { include-group = "collector" },
+    "pytest>=8.3",
+    "pytest-asyncio>=0.24",
+    "ruff>=0.8",
+    "mypy>=1.13",
+]
+bench = ["locust>=2.32"]
+
+[tool.uv]
+default-groups = ["dev"]
+
+[tool.hatch.version]
+path = "src/pulsetrace/_version.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pulsetrace"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/pulsetrace", "README.md", "LICENSE"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+addopts = "-ra --strict-markers"
+markers = [
+    "e2e: end-to-end tests that start the real collector and example services as subprocesses",
+]
+filterwarnings = [
+    "error",
+    # Third-party deprecations that are not ours to fix.
+    "ignore::DeprecationWarning:aiosqlite.*",
+    "ignore::DeprecationWarning:asyncpg.*",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+extend-exclude = ["benchmarks/results"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF", "ASYNC", "PT", "C4", "PIE", "RET", "PERF"]
+ignore = [
+    "RET505",  # explicit else after return is often clearer
+    "SIM105",  # contextlib.suppress is not always clearer than try/except/pass
+    "ASYNC109",  # flush(timeout=) / shutdown(timeout=) are deliberate public API
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests assert inside `except` blocks and raise with `1 / 0` on purpose.
+"tests/**" = ["B011", "B018", "PT011", "PT012", "PT017", "PERF"]
+# Benchmarks build long Markdown report lines.
+"benchmarks/**" = ["E501", "PERF"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+files = ["src/pulsetrace", "collector"]
+warn_unreachable = true
+
+[[tool.mypy.overrides]]
+module = ["collector.*"]
+disallow_untyped_decorators = false

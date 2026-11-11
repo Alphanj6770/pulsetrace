@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}{{ issue.title }}{% endblock %}
+{% block content %}
+<h1>{{ issue.title }}</h1>
+<div class="muted">{{ issue.service }} · {{ issue.occurrence_count }} events ·
+  first seen {{ issue.first_seen[:19] | replace("T", " ") }} · last seen {{ issue.last_seen[:19] | replace("T", " ") }}</div>
+<details style="margin-top:8px"><summary class="muted">Why are these events grouped?</summary>
+  <pre>{% for part in issue.grouping %}{{ part }}
+{% endfor %}</pre></details>
+
+<h2>Latest event</h2>
+{% if issue.latest_event %}<p><a href="/ui/events/{{ issue.latest_event.event_id }}">{{ issue.latest_event.event_id }}</a></p>{% endif %}
+{% include "_event_detail.html" %}
+
+<h2>Recent events</h2>
+<table>
+  <tr><th>Event</th><th>Time</th><th class="hide-sm">Release</th><th>Trace</th></tr>
+  {% for event in issue.recent_events %}
+  <tr>
+    <td><a href="/ui/events/{{ event.event_id }}"><code>{{ event.event_id[:12] }}</code></a></td>
+    <td class="muted">{{ event.timestamp[:23] | replace("T", " ") }}</td>
+    <td class="hide-sm">{{ event.release or "" }}</td>
+    <td>{% if event.trace_id %}<a href="/ui/traces/{{ event.trace_id }}"><code>{{ event.trace_id[:12] }}</code></a>{% endif %}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

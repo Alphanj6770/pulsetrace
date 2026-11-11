@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Events{% endblock %}
+{% block content %}
+<h1>Events</h1>
+<p class="muted">Latest errors, messages and transactions from all services.</p>
+<table>
+  <tr><th>Type</th><th>Title</th><th class="hide-sm">Service</th><th class="num">Duration</th><th class="num hide-sm">Status</th><th>Time</th></tr>
+  {% for event in events %}
+  <tr>
+    <td><span class="pill level-{{ event.level }}">{{ event.type }}</span></td>
+    <td><a href="/ui/events/{{ event.event_id }}">{{ event.title }}</a>
+        {% if event.trace_id %}<div class="muted">trace <a href="/ui/traces/{{ event.trace_id }}"><code>{{ event.trace_id[:12] }}</code></a></div>{% endif %}</td>
+    <td class="hide-sm">{{ event.service }}</td>
+    <td class="num">{% if event.duration_ms is not none %}{{ "%.1f" | format(event.duration_ms) }} ms{% endif %}</td>
+    <td class="num hide-sm">{{ event.status_code or "" }}</td>
+    <td class="muted">{{ event.timestamp[11:23] }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Trace {{ trace.trace_id[:12] }}{% endblock %}
+{% block content %}
+<h1>Trace <code>{{ trace.trace_id }}</code></h1>
+<div class="muted">{{ trace.services | join(" → ") }} · {{ trace.spans | length }} spans · {{ "%.1f" | format(trace.duration_ms) }} ms total</div>
+
+<h2>Waterfall</h2>
+{% set total = trace.duration_ms if trace.duration_ms > 0 else 1 %}
+<div class="waterfall">
+  {% for span in trace.spans %}
+  <div class="row">
+    <div class="label" style="padding-left: {{ span.depth * 14 }}px" title="{{ span.name }}">
+      {% if span.is_transaction %}<strong>{{ span.service }}</strong> {% endif %}
+      <span class="muted">{{ span.op }}</span> {{ span.name }}
+    </div>
+    <div class="track">
+      <div class="bar{% if span.has_error or span.status not in ('ok',) %} error{% endif %}"
+           style="left: {{ (span.offset_ms / total * 100) | round(2) }}%; width: {{ (span.duration_ms / total * 100) | round(2) }}%"></div>
+    </div>
+    <div class="ms">{{ "%.1f" | format(span.duration_ms) }} ms</div>
+  </div>
+  {% endfor %}
+</div>
+
+{% if trace.errors %}
+<h2>Errors in this trace</h2>
+<table>
+  <tr><th>Error</th><th>Service</th></tr>
+  {% for error in trace.errors %}
+  <tr><td><a href="/ui/events/{{ error.event_id }}">{{ error.title }}</a></td><td>{{ error.service }}</td></tr>
+  {% endfor %}
+</table>
+{% endif %}
+{% endblock %}

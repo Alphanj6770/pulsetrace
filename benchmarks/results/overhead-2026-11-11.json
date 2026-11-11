@@ -1,0 +1,139 @@
+{
+  "environment": {
+    "date": "2026-11-11T10:00:01+00:00",
+    "python": "3.14.7",
+    "implementation": "CPython",
+    "platform": "macOS-27.2.1-arm64-arm-64bit-Mach-O",
+    "cpu": "Apple M4",
+    "packages": {
+      "fastapi": "0.162.4",
+      "starlette": "1.10.0",
+      "httpx": "0.28.1",
+      "uvicorn": "0.54.0"
+    }
+  },
+  "results": {
+    "baseline (no PulseTrace)": {
+      "success_path": {
+        "mean_us": 22.6460906,
+        "p50_us": 22.458,
+        "p95_us": 23.708,
+        "p99_us": 28.583,
+        "sequential_rps": 44047.062515433114,
+        "concurrent_rps": 36356.40639652065
+      },
+      "error_path": {
+        "mean_us": 23.28407175,
+        "p50_us": 23.208,
+        "p95_us": 24.084,
+        "p99_us": 29.75,
+        "sequential_rps": 42841.30702857832,
+        "concurrent_rps": 37133.13621696578
+      }
+    },
+    "instrumented, 0% traces, no transmission": {
+      "success_path": {
+        "mean_us": 41.35460215,
+        "p50_us": 39.333,
+        "p95_us": 44.917,
+        "p99_us": 79.417,
+        "sequential_rps": 24137.320838824693,
+        "concurrent_rps": 22667.54290172313
+      },
+      "error_path": {
+        "mean_us": 241.70094175,
+        "p50_us": 229.292,
+        "p95_us": 397.042,
+        "p99_us": 422.875,
+        "sequential_rps": 4135.441212264881,
+        "concurrent_rps": 3996.436341739211
+      },
+      "sdk": {
+        "flushed": true,
+        "captured": 8400,
+        "delivered": 0,
+        "dropped": 8400,
+        "unsent": 0,
+        "queue_high_watermark": null
+      }
+    },
+    "instrumented, 10% traces, no transmission": {
+      "success_path": {
+        "mean_us": 46.8186661,
+        "p50_us": 42.75,
+        "p95_us": 80.125,
+        "p99_us": 84.375,
+        "sequential_rps": 21322.381225852463,
+        "concurrent_rps": 20312.85864885412
+      },
+      "error_path": {
+        "mean_us": 247.83785425,
+        "p50_us": 232.375,
+        "p95_us": 409.0,
+        "p99_us": 445.5,
+        "sequential_rps": 4033.021879012941,
+        "concurrent_rps": 3965.7067177100057
+      },
+      "sdk": {
+        "flushed": true,
+        "captured": 13361,
+        "delivered": 0,
+        "dropped": 13361,
+        "unsent": 0,
+        "queue_high_watermark": null
+      }
+    },
+    "instrumented, 100% traces, no transmission": {
+      "success_path": {
+        "mean_us": 80.2372737,
+        "p50_us": 79.584,
+        "p95_us": 84.625,
+        "p99_us": 90.292,
+        "sequential_rps": 12448.11082804183,
+        "concurrent_rps": 12057.449224018947
+      },
+      "error_path": {
+        "mean_us": 272.8448215,
+        "p50_us": 260.791,
+        "p95_us": 425.0,
+        "p99_us": 458.791,
+        "sequential_rps": 3663.490672406965,
+        "concurrent_rps": 3573.7005579476
+      },
+      "sdk": {
+        "flushed": true,
+        "captured": 58800,
+        "delivered": 0,
+        "dropped": 58800,
+        "unsent": 0,
+        "queue_high_watermark": null
+      }
+    },
+    "full pipeline, 100% traces -> collector": {
+      "success_path": {
+        "mean_us": 80.16476455,
+        "p50_us": 79.417,
+        "p95_us": 84.583,
+        "p99_us": 90.833,
+        "sequential_rps": 12459.595548549321,
+        "concurrent_rps": 11282.355855315074
+      },
+      "error_path": {
+        "mean_us": 275.99666249999996,
+        "p50_us": 262.584,
+        "p95_us": 433.959,
+        "p99_us": 464.958,
+        "sequential_rps": 3621.5840079914233,
+        "concurrent_rps": 3517.024083867373
+      },
+      "sdk": {
+        "flushed": true,
+        "captured": 6948,
+        "delivered": 6948,
+        "dropped": 51852,
+        "unsent": 0,
+        "queue_high_watermark": 2048
+      }
+    }
+  }
+}

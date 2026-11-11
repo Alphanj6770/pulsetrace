@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Issues{% endblock %}
+{% block content %}
+<h1>Issues</h1>
+<p class="muted">Errors grouped by fingerprint (exception type + in-app call path). Newest activity first.</p>
+{% if issues %}
+<table>
+  <tr><th>Issue</th><th class="hide-sm">Service</th><th class="num">Events</th><th class="hide-sm">First seen</th><th>Last seen</th></tr>
+  {% for issue in issues %}
+  <tr>
+    <td><a href="/ui/issues/{{ issue.fingerprint }}">{{ issue.title }}</a>
+        {% if issue.culprit %}<div class="muted"><code>{{ issue.culprit }}</code></div>{% endif %}</td>
+    <td class="hide-sm">{{ issue.service }}</td>
+    <td class="num">{{ issue.occurrence_count }}</td>
+    <td class="hide-sm muted">{{ issue.first_seen[:19] | replace("T", " ") }}</td>
+    <td class="muted">{{ issue.last_seen[:19] | replace("T", " ") }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% else %}
+<p>No issues yet. Trigger an error in an instrumented service.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}PulseTrace{% endblock %} · PulseTrace</title>
+<style>
+  :root {
+    --bg: #fafaf9; --panel: #ffffff; --text: #1c1917; --muted: #78716c; --border: #e7e5e4;
+    --accent: #6d28d9; --error: #dc2626; --warn: #d97706; --ok: #16a34a; --code: #f5f5f4;
+    --bar: #8b5cf6; --bar-error: #ef4444; --inapp: #f5f3ff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0c0a09; --panel: #1c1917; --text: #f5f5f4; --muted: #a8a29e; --border: #292524;
+      --accent: #a78bfa; --code: #141210; --inapp: #221d33;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 14px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+  header { display: flex; gap: 24px; align-items: center; padding: 12px 24px;
+           border-bottom: 1px solid var(--border); background: var(--panel); }
+  header strong { color: var(--accent); }
+  header a { color: var(--muted); text-decoration: none; }
+  header a:hover { color: var(--text); }
+  main { max-width: 1200px; margin: 0 auto; padding: 24px 16px; }
+  h1 { font-size: 20px; margin: 0 0 4px; word-break: break-word; }
+  h2 { font-size: 15px; margin: 28px 0 8px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+  a { color: var(--accent); }
+  table { width: 100%; border-collapse: collapse; background: var(--panel); border: 1px solid var(--border); }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { font-size: 12px; color: var(--muted); font-weight: 600; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .muted { color: var(--muted); }
+  .pill { display: inline-block; padding: 0 8px; border-radius: 999px; font-size: 12px; border: 1px solid var(--border); }
+  .level-error, .level-fatal { color: var(--error); } .level-warning { color: var(--warn); }
+  .status-ok { color: var(--ok); }
+  code, pre { font: 12.5px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; }
+  pre { background: var(--code); padding: 10px; border-radius: 6px; overflow-x: auto; margin: 0; }
+  .frame { border: 1px solid var(--border); border-radius: 6px; margin: 6px 0; background: var(--panel); }
+  .frame.in-app { background: var(--inapp); }
+  .frame .loc { padding: 6px 10px; cursor: pointer; }
+  .frame:not(.in-app) .loc { color: var(--muted); }
+  .frame pre { border-radius: 0 0 6px 6px; }
+  .frame .hl { font-weight: 700; }
+  .exc { margin: 12px 0 18px; }
+  .relation { color: var(--muted); font-style: italic; margin: 10px 0; }
+  .waterfall .row { display: grid; grid-template-columns: minmax(220px, 38%) 1fr 72px; gap: 10px; align-items: center;
+                    padding: 3px 0; border-bottom: 1px solid var(--border); }
+  .waterfall .label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .waterfall .track { position: relative; height: 18px; }
+  .waterfall .bar { position: absolute; top: 3px; height: 12px; min-width: 2px; border-radius: 3px; background: var(--bar); }
+  .waterfall .bar.error { background: var(--bar-error); }
+  .waterfall .ms { font-size: 11px; color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
+  dl.kv { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; margin: 0;
+          background: var(--panel); border: 1px solid var(--border); padding: 10px; border-radius: 6px; }
+  dl.kv dt { color: var(--muted); } dl.kv dd { margin: 0; word-break: break-all; }
+  @media (max-width: 640px) { .hide-sm { display: none; } .waterfall .row { grid-template-columns: 1fr 64px; } .waterfall .label { grid-column: 1 / -1; } }
+</style>
+</head>
+<body>
+<header>
+  <strong>PulseTrace</strong>
+  <a href="/ui/issues">Issues</a>
+  <a href="/ui/events">Events</a>
+  <a href="/docs">API</a>
+</header>
+<main>
+{% block content %}{% endblock %}
+</main>
+</body>
+</html>
